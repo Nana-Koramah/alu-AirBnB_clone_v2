@@ -1,6 +1,10 @@
 #!/usr/bin/python3
 """
 This module starts a Flask web application that serves a page listing states.
+The states are listed in alphabetical order on the '/states_list' route.
+
+The application interacts with a storage system to retrieve and display the states.
+It also ensures the storage is properly closed after each request to maintain resource efficiency.
 """
 
 from flask import Flask, render_template
@@ -14,11 +18,12 @@ app = Flask(__name__)
 def states_list():
     """
     Route handler for /states_list.
-    Displays an HTML page with the states listed in alphabetical order.
-    Fetches all State objects from storage, sorts them by name, and passes them to the template.
+    
+    This function retrieves all State objects from the storage, sorts them by name in
+    alphabetical order, and passes the sorted list to an HTML template for rendering.
     
     Returns:
-        str: Rendered HTML template with the list of states.
+        str: Rendered HTML template displaying the list of states.
     """
     states = sorted(list(storage.all("State").values()), key=lambda x: x.name)
     return render_template('7-states_list.html', states=states)
@@ -27,14 +32,15 @@ def states_list():
 def teardown_db(exception):
     """
     Teardown handler that closes the storage.
-    This function is called after each request to ensure the database connection is closed.
+    
+    This function is called automatically after each request to ensure that the
+    database connection is properly closed, which helps in resource management.
     
     Args:
-        exception (Exception): The exception that occurred (if any).
+        exception (Exception): The exception that occurred during request handling, if any.
     """
     storage.close()
 
 if __name__ == '__main__':
     # Run the Flask application on the specified host and port
     app.run(host='0.0.0.0', port='5000')
-
